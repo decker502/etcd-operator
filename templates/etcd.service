@@ -1,0 +1,14 @@
+[Unit]
+Description=Etcd Server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=${ETCD_DATA_DIR}
+EnvironmentFile=-${ETCD_CFG_DIR}/etcd.conf
+# set GOMAXPROCS to number of processors
+ExecStart=/bin/bash -c "GOMAXPROCS=${ETCD_GOMAXPROCS} ${ETCD_BIN_DIR}/etcd"
+Type=notify
+
+[Install]
+WantedBy=multi-user.target
