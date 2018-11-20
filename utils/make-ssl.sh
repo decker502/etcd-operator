@@ -2,6 +2,7 @@
 
 set -o errexit
 set -o pipefail
+set -x 
 
 usage()
 {
@@ -15,7 +16,7 @@ Usage : $(basename $0) -f <config> [-d <ssldir>]
 
       for each host.
            ex :
-           $(basename $0) --dnss "domain.com domain2.com" --ips "192.168.1.1 192.168.1.2" -d /srv/ssl
+           $(basename $0) -ip "192.168.1.1" -d /srv/ssl
 EOF
 }
 
@@ -52,12 +53,14 @@ export SAN="IP:127.0.0.1"
 
 # Root CA
 if [ -e "$SSLDIR/ca-key.pem" ]; then
+    echo "test1:"${SSLDIR}
     # Reuse existing CA
     cp $SSLDIR/{ca.pem,ca-key.pem} .
 else
+echo "test2"
     openssl genrsa -out ca-key.pem 2048 > /dev/null 2>&1
     openssl req -x509 -new -nodes -key ca-key.pem -days 10000 -out ca.pem -subj "/CN=etcd-ca" > /dev/null 2>&1
-    
+    cp ca*.pem $SSLDIR/
 fi
 
 gen_key_and_cert() {
@@ -86,6 +89,7 @@ gen_key_and_cert() {
 # client
 if ! [ -e "$SSLDIR/client.pem" ]; then
     gen_key_and_cert "client" "/CN=client"
+    mv client*.pem ${SSLDIR}/
 fi
 
 IP=""
@@ -105,4 +109,4 @@ gen_key_and_cert "peer-${MEMBER_IP}" "/CN=${MEMBER_IP}"
 
 unset SAN
 # Install certs
-mv -n *.pem ${SSLDIR}/
+mv server*.pem peer*.pem ${SSLDIR}/

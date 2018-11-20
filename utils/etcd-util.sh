@@ -15,9 +15,6 @@ SSH_OPTS="-oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -oLogLevel=E
 readonly ROOT=$(cd $(dirname "${BASH_SOURCE}")/.. && pwd)
 source "${ROOT}/${ETCD_CONFIG_FILE:-"utils/config-default.sh"}"
 
-# Directory to be used for master and node provisioning.
-ETCD_TEMP="~/ETCD_TEMP"
-
 # Instantiate a etcd cluster
 function etcd-up() {
   local num_infra=0
@@ -32,7 +29,8 @@ function etcd-up() {
   
   for node in ${ETCD_NODES}; do
     echo "[INFO] start service for ${node}"
-    kube-ssh "${node}" "sudo bash ${ETCD_TEMP}/scripts/up.sh" &
+    kube-ssh "${node}" "sudo systemctl daemon-reload; sudo systemctl enable etcd;"
+    kube-ssh "${node}" "sudo systemctl restart etcd" &
   done
 
   wait
@@ -54,7 +52,6 @@ function etcd-down() {
 # Assumed vars:
 #   $1 (node)
 #   $2 (etcd_name)
-#   ETCD_TEMP
 #   ETCD_SERVERS
 #   ETCD_INITIAL_CLUSTER
 function provision-etcd() {
@@ -65,7 +62,7 @@ function provision-etcd() {
   ensure-setup-dir "${node}"
 
   echo "[INFO] Scp files"
-  kube-scp "${node}" "${ROOT}/binaries ${ROOT}/scripts ${ROOT}/templates ${ROOT}/utils" "${ETCD_TEMP}"
+  kube-scp "${node}" "${ROOT}/binaries/etcd ${ROOT}/binaries/etcdctl" "${ETCD_BIN_DIR}"
   kube-scp "${node}" "${LOCAL_CERT_DIR}/ca.pem \
     ${LOCAL_CERT_DIR}/client.pem \
     ${LOCAL_CERT_DIR}/client-key.pem \
@@ -83,8 +80,8 @@ function provision-etcd() {
   kube-ssh-pipe "${node}" "envsubst <  ${ROOT}/templates/etcd.conf" "sudo cat > ${ETCD_CFG_DIR}/etcd.conf"
 
   kube-ssh "${node}" " \
-    sudo cp -rn ${ETCD_TEMP}/binaries/* ${ETCD_BIN_DIR}; \
     sudo chmod -R +x ${ETCD_BIN_DIR}; "
+
 }
 
 # Validate a kubernetes cluster
@@ -123,7 +120,6 @@ echo "[INFO] tear-down on $1"
   done
   kube-ssh "${1}" "sudo rm -rf ${ETCD_BIN_DIR}"
   kube-ssh "${1}" "sudo rm -rf ${ETCD_CFG_DIR}"
-  kube-ssh "${1}" "sudo rm -rf ${ETCD_TEMP}"
   kube-ssh "${1}" "sudo rm -rf ${ETCD_DATA_DIR}"
 }
 
@@ -227,13 +223,12 @@ function kube-scp() {
   local host="$1"
   local src=($2)
   local dst="$3"
-  rsync -avzuq  ${src[*]} "${host}:${dst}"
+  rsync -vzuqL  ${src[*]} "${host}:${dst}"
 }
 
 # Create dirs that'll be used during setup on target machine.
 #
 # Assumed vars:
-#   ETCD_TEMP
 function ensure-setup-dir() {
-  kube-ssh "${1}" "mkdir -p ${ETCD_TEMP} ${ETCD_DATA_DIR} ${ETCD_BIN_DIR} ${ETCD_CERT_DIR};"
+  kube-ssh "${1}" "mkdir -p ${ETCD_DATA_DIR} ${ETCD_BIN_DIR} ${ETCD_CERT_DIR};"
 }

@@ -65,6 +65,12 @@ bash etcd-up.sh dev.sh
 bash etcd-down.sh ${env}
 ```
 
+## 调试模式
+
+```
+bash -x etcd-up.sh dev.sh
+```
+
 ## 参考项目
 
 [kubernetes](https://github.com/kubernetes/kubernetes)

@@ -8,6 +8,7 @@
 set -o errexit
 set -o nounset
 set -o pipefail
+set -x
 
 if [ $# -le 0 ];then
   echo -e "Environment para should be set" >&2

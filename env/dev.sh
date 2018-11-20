@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
+readonly ENV_ROOT=$(cd $(dirname "${BASH_SOURCE}")/.. && pwd)
 
 # 必填项
 export ETCD_NODES=("10.200.0.15 10.200.0.14 10.200.0.13")
 
+export LOCAL_CERT_DIR="${ENV_ROOT}/cert/dev"
+export LOCAL_BACKUP_DIR="${ENV_ROOT}/backup/dev"
 # 可选项
 # export ETCD_DOMAINS=("www.do.com" "www2.do.com")
 # export LOCAL_CERT_DIR="${root}/ca-cert"

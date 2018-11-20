@@ -10,14 +10,14 @@ export ETCD_DOMAINS=${ETCD_DOMAINS:-""}
 export ETCD_NODES=${ETCD_NODES:-""}
 
 #　发布机证书目录
-export LOCAL_CERT_DIR="${root}/cert"
+export LOCAL_CERT_DIR=${LOCAL_CERT_DIR:-"${root}/cert"}
 
 # 目录机相关配置项
-export ETCD_CFG_DIR="/etc/etcd"
-export ETCD_DATA_DIR="/var/lib/etcd"
-export ETCD_GOMAXPROCS="2"
-export ETCD_CERT_DIR="${ETCD_CFG_DIR}/cert"
-export ETCD_BIN_DIR="/opt/etcd/bin"
+export ETCD_CFG_DIR=${EETCD_CFG_DIRTCD_NODES:-"/etc/etcd"}
+export ETCD_DATA_DIR=${ETCD_DATA_DIR:-"/var/lib/etcd"}
+export ETCD_GOMAXPROCS=${ETCD_GOMAXPROCS:-"2"}
+export ETCD_CERT_DIR=${ETCD_CERT_DIR:-"${ETCD_CFG_DIR}/cert"}
+export ETCD_BIN_DIR=${ETCD_BIN_DIR:-"/opt/etcd/bin"}
 
 export ETCD_CAFILE=${ETCD_CAFILE:-"${ETCD_CERT_DIR}/ca.pem"}
 export ETCD_CERTFILE=${ETCD_CERTFILE:-"${ETCD_CERT_DIR}/client.pem"}

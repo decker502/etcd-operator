@@ -8,8 +8,6 @@ set -o pipefail
 
 ETCD_ROOT=$(dirname "${BASH_SOURCE}")
 
-source ${ETCD_ROOT}/utils/etcd-util.sh
-
 if [ $# -le 0 ];then
   echo -e "Environment para should be set" >&2
   exit 1
@@ -23,6 +21,7 @@ else
   exit 1
 fi
 
+source ${ETCD_ROOT}/utils/etcd-util.sh
 source ${ETCD_ROOT}/utils/common.sh
 
 echo -e "${color_green}... calling verify-prereqs${color_norm}" >&2
