@@ -81,7 +81,7 @@ gen_key_and_cert() {
     openssl genrsa -out ${name}-key.pem 2048 > /dev/null 2>&1
 
     openssl req -new -key ${name}-key.pem -out ${name}.csr -subj "${subject}" -config <(echo -e "${config}") > /dev/null 2>&1
-    openssl x509 -req -in ${name}.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out ${name}.pem -days 3650 -extensions v3_req -extfile <(echo -e "${config}") > /dev/null 2>&1
+    openssl x509 -req -in ${name}.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out ${name}.pem -days 10000 -extensions v3_req -extfile <(echo -e "${config}") > /dev/null 2>&1
     
 }
 

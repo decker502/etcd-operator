@@ -6,6 +6,7 @@
 - 基于原生操作系统的环境，即可一键发布
 - 极其轻量的启动
 - 生产环境高可用
+- 支持多环境配置
 - 尽量少的依赖项，包括发布机和目标机
 - 支持主流 Linux 系操作系统
 - 发布后自动检查集群健康
@@ -43,7 +44,7 @@ export ETCD_NODES=("10.200.0.15 10.200.0.14 10.200.0.13")
 
 - 准备 ETCD　二进制文件 { etcd, etcdctl }，置于 binaries目录下
 
-## 启动集群
+## 创建/启动集群
 
 ```bash
 # env　为变量
@@ -53,7 +54,35 @@ bash etcd-up.sh ${env}
 例如：
 
 ```bash
-bash etcd-up.sh dev.sh
+bash etcd-up.sh dev
+```
+
+## 备份集群
+
+```bash
+# env　为变量
+bash etcd-backup.sh ${env}
+```
+
+例如：
+
+```bash
+bash etcd-backup.sh dev
+```
+
+## 恢复集群
+
+使用之前备份的数据恢复集群数据
+
+```bash
+# env　为变量
+bash etcd-restore.sh ${env}
+```
+
+例如：
+
+```bash
+bash etcd-up.sh dev
 ```
 
 ## 销毁集群
@@ -68,7 +97,7 @@ bash etcd-down.sh ${env}
 ## 调试模式
 
 ```
-bash -x etcd-up.sh dev.sh
+bash -x etcd-up.sh dev
 ```
 
 ## 参考项目
